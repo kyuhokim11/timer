@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        body{
+            background: linear-gradient(to right, #F0F4FF,#A5B6EE);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header{
+            color: white;
+            font-size: 48px;
+        }
+        footer{
+            color: #8596BF;
+            font-size: 17px;
+        }
+        .container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+        .box{
+            background: linear-gradient(to right, #5572BB,#374B7C);
+            width: 400px;
+            height: 360px;
+            border-radius: 16px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .timer{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            
+        }
+        .time-box{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .colon{
+            font-size: 50px;
+            margin: 0 0 0 0px;
+            padding-top: 20px;
+            color: white;
+        }
+        .time{
+            display: flex;
+            width: 80px;
+            height: 80px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 10px;
+            background: linear-gradient(to right, #4C65A0,#304577 );
+            border: #354971 1px solid;
+            font-size: 40px;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .buttons{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+        }
+        button{
+            width: 100px;
+            height: 40px;
+            margin: 0 10px;
+            border-radius: 50px;
+            border: none;
+            background-color: #324577;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>Weniv</header>
+<div class="box">
+    <h2>TIMER</h2>
+    <hr style="width: 80%; border-top: 1px solid #3D538A; border-bottom: 1px solid #5B75B4;">
+    
+    <div class="timer">
+        <div class="time-box">
+            <div class="label">HRS</div>
+            <input type="text" class="time" id="hours" value="00">
+        </div>
+        <div class="colon">
+            :
+        </div>
+        <div class="time-box">
+            <div class="label">MIN</div>
+            <input type="text" class="time" id="minutes" value="00">
+    </div>
+     <div class="colon">
+            :
+        </div>
+        <div class="time-box">
+            <div class="label">SEC</div>
+            <input type="text" class="time" id="seconds" value="00">
+        </div>
+</div>
+    <div class="buttons">
+        <button id="start">Start</button>
+        <button id="reset">Reset</button>
+     </div>
+     </div>
+     
+     <footer>ⓒ WENIV Corp.</footer>
+     </div>
+     <script>
+
+// 1. 시간/분/초 입력할 수 있습니다.
+// 2. Start를 누르면 타이머가 1초 단위로 감소합니다.
+// 2-1. Start를 누르면 Pause로 바뀝니다.
+// 2-2. Pause를 누르면 Start로 바뀝니다.
+// 3. Pause를 누르면 타이머가 멈춥니다.
+// 4. 다시 Start를 누르면 재시작됩니다.
+// 5. 0초가 되면 초기화 됩니다.
+// 6. Reset을 누르면 초기화 됩니다.
+
+// 각 element 가져오기
+let hours = document.getElementById("hours");
+let minutes = document.getElementById("minutes");
+let seconds = document.getElementById("seconds");
+let startBtn = document.getElementById("start");
+let resetBtn = document.getElementById("reset");
+let timer;                                          // setInterval을 담을 변수
+let totalSeconds = 0;                               // 총 시간을 초 단위로 저장
+let isRunning = false;                              // 타이머 동작 여부
+
+// 시간을 업데이트하는 함수
+function updateTime() {
+    let hrs = Math.floor(totalSeconds / 3600); // 시간 계산
+    let mins = Math.floor((totalSeconds % 3600) / 60);  // 분 계산
+    let secs = totalSeconds % 60;               // 초 계산
+    hours.value = String(hrs).padStart(2, '0'); 
+    minutes.value = String(mins).padStart(2, '0');
+    seconds.value = String(secs).padStart(2, '0');
+
+    // 세팅된 시간이 0이하 일때 타이머를 멈추게 함
+    if (totalSeconds <= 0) { 
+        clearInterval(timer);
+        isRunning = false;
+        startBtn.textContent = "Start";
+    }
+
+
+}
+// 타이머 시작/일시정지 함수
+function toggleTimer() {
+    
+    if (!isRunning) { 
+        // 각각에 입력된 값을 정수로 변환하고, 총 시간을 초 단위로 변환
+        let hrs = parseInt(hours.value) || 0;   
+        let mins = parseInt(minutes.value) || 0;
+        let secs = parseInt(seconds.value) || 0;
+        totalSeconds = hrs * 3600 + mins * 60 + secs;  
+
+        if (totalSeconds > 0) {                     // 총 시간이 0보다 클 때만 타이머 시작
+            timer = setInterval(() => { 
+                totalSeconds--; 
+                updateTime();   
+            }, 1000);                               // 1초마다 실행
+            isRunning = true;                       
+            startBtn.textContent = "Pause"; 
+        } else {
+            alert("타이머 시간을 설정해주세요!")
+        }
+    } else { 
+        clearInterval(timer);   
+        isRunning = false; 
+        startBtn.textContent = "Start"; 
+    }
+
+}
+// 타이머 리셋 함수, 모든 값이 0으로 초기화
+function resetTimer(){
+    clearInterval(timer);   
+    isRunning = false;
+    totalSeconds = 0;
+    hours.value = "00";
+    minutes.value = "00";
+    seconds.value = "00";
+    startBtn.textContent = "Start";
+
+}
+
+
+startBtn.addEventListener("click", toggleTimer);
+resetBtn.addEventListener("click", resetTimer);
+
+// 초기 시간 설정
+updateTime();
+
+
+
+</script>
+</body>
+</html>
